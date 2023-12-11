@@ -26,47 +26,7 @@ public class Program {
         Console.WriteLine($"Successfully loaded XML file at path \"{filepath}\"!");
         Console.WriteLine($"Project name: {GetProjectName(doc)}");
 
-        // testing to see how easy this'll be
-        XmlNodeList tempList = doc.GetElementsByTagName("member");
-        foreach (XmlNode memberNode in tempList) {
-            string attribute = memberNode.Attributes[0].InnerText;
-            string[] splitString = attribute.Split(":");
-            string type = splitString[0];
-            string name = splitString[1];
-
-            // writes name header
-            Console.WriteLine($"--- {name} ---");
-
-            // determines type
-            string typeString = "undetermined";
-            switch (type) {
-                case "P":
-                    typeString = "Property";
-                    break;
-
-                case "M":
-                    if (name.Contains("#ctor")) {
-                        typeString = "Constructor";
-                    } else {
-                        typeString = "Method";
-                    }
-
-                    break;
-
-                case "T":
-                    typeString = "Class";
-                    break;
-            }
-            Console.WriteLine($"Type: {typeString}");
-
-            foreach (XmlNode child in memberNode.ChildNodes) {
-                Console.WriteLine(child.InnerText.Trim());
-            }
-
-            Console.WriteLine();
-        }
-
-        // WriteHTML(doc);
+        WriteHTML(doc);
     }
 
     /// <summary>
@@ -91,6 +51,34 @@ public class Program {
         return doc.GetElementsByTagName("name")[0].InnerText;
     }
 
+    static List<DocContainer> GenerateContainers(XmlDocument doc) {
+        List<DocContainer> containers = new();
+
+        // gets all elements marked as a "member" and adds them iteratively
+        XmlNodeList nodeList = doc.GetElementsByTagName("member");
+
+        foreach (XmlNode node in nodeList) {
+            DocElement element = new(node);
+
+            bool containerExists = false;
+            foreach (DocContainer container in containers) {
+                if (container.Name == element.ContainerName) {
+                    containerExists = true;
+                    container.AddElement(element);
+                }
+            }
+
+            // creates a new container if it doesn't exist yet
+            if (!containerExists) {
+                DocContainer container = new();
+                container.AddElement(element);
+                containers.Add(container);
+            }
+        }
+
+        return containers;
+    }
+
     /// <summary>
     /// Writes converts and writes the inputted XML document to an HTML document
     /// </summary>
@@ -112,10 +100,14 @@ public class Program {
             "<body>\n"
         );
 
+        // body HTML
         html += $"<h1>{GetProjectName(doc)}</h1>";
+        List<DocContainer> containers = GenerateContainers(doc);
+        foreach (DocContainer container in containers) {
+            html += container.ToString();
+        }
 
-        // add the body shit (ALL THE XML CONTENT)
-
+        // ending HTML
         html += (
             "</body>\n" +
             "\n" +
