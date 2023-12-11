@@ -26,7 +26,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/bin/Debug/net8.0/HTMLFromXML.dll",
-            "args": ["SummerGame.xml"],
+            "args": [
+                "HTMLFromXML.xml"
+            ],
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "stopAtEntry": false
