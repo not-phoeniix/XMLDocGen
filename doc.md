@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>HTMLFromXML</title></head>
-
-<body>
 <h1>HTMLFromXML</h1><h2>HTMLFromXML.DocContainer</h2>
 <p>Class representation of a class/struct/interface/etc. Holds a bunch of child DocElement's to display on page.</p>
 <h3>Properties</h3>
@@ -90,7 +81,3 @@
 <p><em>param</em> doc: Xml document to draw data from</p>
 
 <br>
-
-</body>
-
-</html>
