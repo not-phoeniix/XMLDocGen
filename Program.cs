@@ -51,6 +51,11 @@ public class Program {
         return doc.GetElementsByTagName("name")[0].InnerText;
     }
 
+    /// <summary>
+    /// Generates a list of containers with all HTML-formatted information from inputted Xml doc
+    /// </summary>
+    /// <param name="doc">Xml document to get data from</param>
+    /// <returns>Generated list of containers</returns>
     static List<DocContainer> GenerateContainers(XmlDocument doc) {
         List<DocContainer> containers = new();
 
@@ -105,6 +110,7 @@ public class Program {
         List<DocContainer> containers = GenerateContainers(doc);
         foreach (DocContainer container in containers) {
             html += container.ToString();
+            html += "<br>\n\n";
         }
 
         // ending HTML

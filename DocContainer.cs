@@ -25,6 +25,10 @@ public class DocContainer {
     private List<DocElement> Constructors { get; set; } = new();
     private List<DocElement> Methods { get; set; } = new();
 
+    /// <summary>
+    /// Adds an element to this container's html structure
+    /// </summary>
+    /// <param name="element">Element to add</param>
     public void AddElement(DocElement element) {
         // sets container name to element's container name if null
         Name ??= element.ContainerName;
@@ -51,6 +55,10 @@ public class DocContainer {
         Elements.Add(element);
     }
 
+    /// <summary>
+    /// HTML representation of this container and all its elements
+    /// </summary>
+    /// <returns>HTML string</returns>
     public override string ToString() {
         // title string
         string html = $"<h2>{Name}</h2>\n";
@@ -60,19 +68,29 @@ public class DocContainer {
             "<p>No container summary found :(</p>\n" :
             $"<p>{Summary}</p>\n";
 
-        // adds all constructors
-        foreach (DocElement element in Constructors) {
-           html += element.ToString() + "\n";
+        // adds all constructors if there are any
+        if (Constructors.Count != 0) {
+            html += "<h3>Constructors</h3>\n";
+            foreach (DocElement element in Constructors) {
+                html += element.ToString() + "\n";
+            }
+
         }
 
-        // adds all properties
-        foreach (DocElement element in Properties) {
-           html += element.ToString() + "\n";
+        // adds all properties if there are any
+        if (Properties.Count != 0) {
+            html += "<h3>Properties</h3>\n";
+            foreach (DocElement element in Properties) {
+                html += element.ToString() + "\n";
+            }
         }
 
-        // adds all
-        foreach (DocElement element in Methods) {
-           html += element.ToString() + "\n";
+        // adds all methods if there are any
+        if (Methods.Count != 0) {
+            html += "<h3>Methods</h3>\n";
+            foreach (DocElement element in Methods) {
+                html += element.ToString() + "\n";
+            }
         }
 
         return html;

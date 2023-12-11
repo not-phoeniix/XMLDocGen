@@ -34,6 +34,11 @@ public class DocElement {
     public Dictionary<string, string> Params { get; set; } = new();
 
     /// <summary>
+    /// Member returns summary
+    /// </summary>
+    public string Returns { get; set; }
+
+    /// <summary>
     /// Type of element, can be a method, property, constructor, etc
     /// </summary>
     public ElementType Type { get; private set; }
@@ -57,16 +62,24 @@ public class DocElement {
 
         XmlNodeList children = node.ChildNodes;
 
+        // iterates thru all child nodes, updating values of this element
         foreach (XmlNode child in children) {
+            // general summary
             if (child.Name == "summary") {
                 Summary = child.InnerText.Trim();
             }
 
+            // parameters
             if (child.Name == "param") {
                 string key = child.Attributes[0].InnerText.Trim();
                 string value = child.InnerText.Trim();
 
                 Params.Add(key, value);
+            }
+
+            // return statement
+            if (child.Name == "returns") {
+                Returns = child.InnerText.Trim();
             }
         }
     }
@@ -78,7 +91,6 @@ public class DocElement {
     /// <param name="name">Name following the element type</param>
     /// <returns>ElementType that corresponds to the inputted type string</returns>
     private ElementType GetType(string type, string name) {
-        // determines type
         switch (type) {
             case "P":
                 return ElementType.Property;
@@ -103,12 +115,16 @@ public class DocElement {
     /// <returns>String of HTML for this current element</returns>
     public override string ToString() {
         string html = (
-            $"<h3>{Name}</h3>\n" +
+            $"<h4>{Name}</h4>\n" +
             $"<p><em>Summary:</em> {Summary}</p>\n"
         );
 
         foreach (KeyValuePair<string, string> pair in Params) {
             html += $"<p><em>param</em> {pair.Key}: {pair.Value}</p>\n";
+        }
+
+        if (Returns != null) {
+            html += $"<p><em>returns:</em> {Returns}</p>\n";
         }
 
         return html;
