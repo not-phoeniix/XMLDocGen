@@ -9,12 +9,12 @@ public class DocContainer {
     /// <summary>
     /// Container name
     /// </summary>
-    public string Name { get; private set; }
+    public string Name { get; private set; } = null;
 
     /// <summary>
     /// Summary text of container
     /// </summary>
-    public string Summary { get; private set; }
+    public string Summary { get; private set; } = null;
 
     /// <summary>
     /// List of all child DocElements's inside this container
@@ -26,6 +26,9 @@ public class DocContainer {
     private List<DocElement> Methods { get; set; } = new();
 
     public void AddElement(DocElement element) {
+        // sets container name to element's container name if null
+        Name ??= element.ContainerName;
+
         switch (element.Type) {
             case ElementType.Type:
                 Name = element.Name;
@@ -50,8 +53,11 @@ public class DocContainer {
 
     public override string ToString() {
         // title string
-        string html =
-            $"<h2>{Name}</h2>\n" +
+        string html = $"<h2>{Name}</h2>\n";
+
+        // sets summary, notifies if no summary exists
+        html += Summary == null ?
+            "<p>No container summary found :(</p>\n" :
             $"<p>{Summary}</p>\n";
 
         // adds all constructors

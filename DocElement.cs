@@ -104,11 +104,11 @@ public class DocElement {
     public override string ToString() {
         string html = (
             $"<h3>{Name}</h3>\n" +
-            $"<p>Summary: {Summary}</p>\n"
+            $"<p><em>Summary:</em> {Summary}</p>\n"
         );
 
         foreach (KeyValuePair<string, string> pair in Params) {
-            html += $"<p>param {pair.Key}: {pair.Value}</p>";
+            html += $"<p><em>param</em> {pair.Key}: {pair.Value}</p>\n";
         }
 
         return html;
