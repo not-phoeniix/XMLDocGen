@@ -18,7 +18,7 @@ public class Program {
         try {
             doc.Load(filepath);
         } catch (Exception ex) {
-            Console.WriteLine("Error loading file! " + ex.Message);
+            Console.WriteLine("Error loading Xml document! " + ex.Message);
             return;
         }
 
@@ -26,7 +26,7 @@ public class Program {
         Console.WriteLine($"Successfully loaded XML file at path \"{filepath}\"!");
         Console.WriteLine($"Project name: {GetProjectName(doc)}");
 
-        WriteHTML(doc);
+        WriteHTML(doc, "bin/output/");
     }
 
     /// <summary>
@@ -62,6 +62,7 @@ public class Program {
         // gets all elements marked as a "member" and adds them iteratively
         XmlNodeList nodeList = doc.GetElementsByTagName("member");
 
+        // adds all "member" nodes to containers
         foreach (XmlNode node in nodeList) {
             DocElement element = new(node);
 
@@ -88,80 +89,51 @@ public class Program {
     /// Writes converts and writes the inputted XML document to an HTML document
     /// </summary>
     /// <param name="doc">Xml document to draw data from</param>
-    static void WriteHTML(XmlDocument doc) {
-        string html = "";
+    /// <param name="outputPath">Directory path to output HTML pages</param>
+    static void WriteHTML(XmlDocument doc, string outputPath) {
+        string pagesPath = outputPath + "pages/";
 
-        // top HTML
-        html += (
-            "<!DOCTYPE html>\n" +
-            "<html lang=\"en\">\n" +
-            "\n" +
-            "<head>\n" +
-                "\t<meta charset=\"UTF-8\">\n" +
-                "\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-                $"\t<title>{GetProjectName(doc)}</title>\n" +
-            "</head>\n" +
-            "\n" +
-            "<body>\n"
-        );
-
-        // body HTML
-        html += $"<h1>{GetProjectName(doc)}</h1>";
-        List<DocContainer> containers = GenerateContainers(doc);
-        foreach (DocContainer container in containers) {
-            html += container.ToString();
-            html += "<br>\n\n";
-        }
-
-        // ending HTML
-        html += (
-            "</body>\n" +
-            "\n" +
-            "</html>\n"
-        );
-
-        string outputFolder = "bin/output/";
-
-        // write HTML to a file
-        StreamWriter writer = null;
+        // create directiories
         try {
             // creates directories
-            FileInfo directory = new FileInfo(outputFolder + "pages/");
+            FileInfo directory = new FileInfo(pagesPath);
             directory.Directory.Create();
-
-            // open writer
-            writer = new StreamWriter(outputFolder + "doc.html");
-            List<string> htmlList = new();
-
-            // fill htmlList with lines of HTML from big string
-            string line = "";
-            for (int i = 0; i < html.Length; i++) {
-                if (html[i] != '\n') {
-                    // add character to line string
-                    line += html[i];
-
-                } else {
-                    // add line and reset string
-                    htmlList.Add(line);
-                    line = "";
-                }
-            }
-
-            // write the lines to the file buffer
-            foreach (string s in htmlList) {
-                writer.WriteLine(s);
-            }
-
-            Console.WriteLine("Successfully wrote HTML file!!");
 
         } catch (Exception ex) {
             // error printing
-            Console.WriteLine("Error in writing HTML! Error: " + ex.Message);
-
-        } finally {
-            // close writer if it's not null
-            //   (flushing stream and creating file)
-            writer?.Close();
+            Console.WriteLine("Error in creating directories! Error: " + ex.Message);
         }
+
+        List<DocContainer> containers = GenerateContainers(doc);
+
+        // create and write all type HTML files
+        foreach (DocContainer container in containers) {
+            string title = container.Name;
+            HTMLPage page = new HTMLPage(title, container, null);
+            page.WriteToFile(pagesPath + title + ".html");
+        }
+
+        // create main page
+
+        string innerHTML = (
+            "<h1>main page lol</h1>\n" +
+            "<p>sub pages:</p>\n" +
+            "<ul>\n"
+        );
+
+        foreach (DocContainer container in containers) {
+            string relPath = "pages/" + container.Name + ".html";
+
+            // adds a list item linking to each container page thingy
+            innerHTML +=
+                "\t<li>" +
+                    $"<a href=\"{relPath}\">{container.Name}</a>" +
+                "</li>\n";
+        }
+
+        innerHTML += "</ul>\n";
+
+        HTMLPage mainPage = new HTMLPage("Main page lol", null, innerHTML);
+        mainPage.WriteToFile(outputPath + "index.html");
     }
 }

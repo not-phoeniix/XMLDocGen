@@ -115,7 +115,7 @@ public class DocElement {
     /// <returns>String of HTML for this current element</returns>
     public override string ToString() {
         string html = (
-            $"<h4>{Name}</h4>\n" +
+            $"<h3>{Name}</h3>\n" +
             $"<p><em>Summary:</em> {Summary}</p>\n"
         );
 

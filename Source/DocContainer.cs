@@ -61,7 +61,7 @@ public class DocContainer {
     /// <returns>HTML string</returns>
     public override string ToString() {
         // title string
-        string html = $"<h2>{Name}</h2>\n";
+        string html = $"<h1>{Name}</h1>\n";
 
         // sets summary, notifies if no summary exists
         html += Summary == null ?
@@ -70,7 +70,7 @@ public class DocContainer {
 
         // adds all constructors if there are any
         if (Constructors.Count != 0) {
-            html += "<h3>Constructors</h3>\n";
+            html += "<h2>Constructors</h2>\n";
             foreach (DocElement element in Constructors) {
                 html += element.ToString() + "\n";
             }
@@ -79,7 +79,7 @@ public class DocContainer {
 
         // adds all properties if there are any
         if (Properties.Count != 0) {
-            html += "<h3>Properties</h3>\n";
+            html += "<h2>Properties</h2>\n";
             foreach (DocElement element in Properties) {
                 html += element.ToString() + "\n";
             }
@@ -87,11 +87,13 @@ public class DocContainer {
 
         // adds all methods if there are any
         if (Methods.Count != 0) {
-            html += "<h3>Methods</h3>\n";
+            html += "<h2>Methods</h2>\n";
             foreach (DocElement element in Methods) {
                 html += element.ToString() + "\n";
             }
         }
+
+        html += "<footer><a href=\"../index.html\">Back to main page</a></footer>";
 
         return html;
     }
