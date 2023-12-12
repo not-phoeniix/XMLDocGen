@@ -1,7 +1,14 @@
 namespace HTMLFromXML;
 
 public class HTMLPage {
+    /// <summary>
+    /// Title of the HTML page
+    /// </summary>
     public string Title { get; private set; }
+
+    /// <summary>
+    /// Entire inner HTML string
+    /// </summary>
     public string HTML { get; private set; } = "";
 
     /// <summary>

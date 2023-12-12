@@ -91,6 +91,30 @@
             </summary>
             <returns>String of HTML for this current element</returns>
         </member>
+        <member name="P:HTMLFromXML.HTMLPage.Title">
+            <summary>
+            Title of the HTML page
+            </summary>
+        </member>
+        <member name="P:HTMLFromXML.HTMLPage.HTML">
+            <summary>
+            Entire inner HTML string
+            </summary>
+        </member>
+        <member name="M:HTMLFromXML.HTMLPage.#ctor(System.String,HTMLFromXML.DocContainer,System.String)">
+            <summary>
+            Creates a new HTMLPage object
+            </summary>
+            <param name="title">Title of page</param>
+            <param name="container">Container that contains XML document data (optional)</param>
+            <param name="additionalHTML">Any additional HTML string to add after container stuff (optional)</param>
+        </member>
+        <member name="M:HTMLFromXML.HTMLPage.WriteToFile(System.String)">
+            <summary>
+            Writes the HTMLPage's html content to a file
+            </summary>
+            <param name="filepath">Filepath of new HTML file</param>
+        </member>
         <member name="M:HTMLFromXML.Program.PrintHelp">
             <summary>
             Prints the help message for running the command
@@ -110,11 +134,12 @@
             <param name="doc">Xml document to get data from</param>
             <returns>Generated list of containers</returns>
         </member>
-        <member name="M:HTMLFromXML.Program.WriteHTML(System.Xml.XmlDocument)">
+        <member name="M:HTMLFromXML.Program.WriteHTML(System.Xml.XmlDocument,System.String)">
             <summary>
             Writes converts and writes the inputted XML document to an HTML document
             </summary>
             <param name="doc">Xml document to draw data from</param>
+            <param name="outputPath">Directory path to output HTML pages</param>
         </member>
     </members>
 </doc>

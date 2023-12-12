@@ -117,7 +117,7 @@ public class Program {
         // create main page
 
         string innerHTML = (
-            "<h1>main page lol</h1>\n" +
+            "<h1>Main documentation page</h1>\n" +
             "<p>sub pages:</p>\n" +
             "<ul>\n"
         );
@@ -134,7 +134,7 @@ public class Program {
 
         innerHTML += "</ul>\n";
 
-        HTMLPage mainPage = new HTMLPage("Main page lol", null, innerHTML);
+        HTMLPage mainPage = new HTMLPage("Main documentation page", null, innerHTML);
         mainPage.WriteToFile(outputPath + "index.html");
     }
 }
