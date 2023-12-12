@@ -5,13 +5,14 @@ namespace HTMLFromXML;
 
 public class Program {
     static void Main(string[] args) {
-        if (args.Length == 0) {
-            Console.WriteLine("ERROR: No filepath provided...\n");
+        if (args.Length < 2) {
+            Console.WriteLine("Error with args...\n");
             PrintHelp();
             return;
         }
 
         string filepath = args[0];
+        string outputPath = args[1];
 
         // create document object and load file, exit and print if file not found
         XmlDocument doc = new();
@@ -26,7 +27,7 @@ public class Program {
         Console.WriteLine($"Successfully loaded XML file at path \"{filepath}\"!");
         Console.WriteLine($"Project name: {GetProjectName(doc)}");
 
-        WriteHTML(doc, "bin/output/");
+        WriteHTML(doc, outputPath);
     }
 
     /// <summary>
@@ -36,9 +37,9 @@ public class Program {
         Console.WriteLine(
             "HTMLFromXML - Generate an HTML page file from C# XML\n" +
             "\n" +
-            "Usage:\n" +
-            "HTMLFromXML [filepath]\n" +
-            "(where filepath is the path to the xml file to be converted)"
+            "Usage: HTMLFromXML [inputFile] [outputPath]\n" +
+                "\t[inputFile] - filepath of input C# XML project file\n" +
+                "\t[outputPath] - directory to output all HTML files into\n"
         );
     }
 
