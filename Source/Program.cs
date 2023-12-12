@@ -99,7 +99,7 @@ public class Program {
             "<head>\n" +
                 "\t<meta charset=\"UTF-8\">\n" +
                 "\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-                $"\t<title>{GetProjectName(doc)}</title>" +
+                $"\t<title>{GetProjectName(doc)}</title>\n" +
             "</head>\n" +
             "\n" +
             "<body>\n"
@@ -120,13 +120,20 @@ public class Program {
             "</html>\n"
         );
 
+        string outputFolder = "bin/output/";
+
         // write HTML to a file
         StreamWriter writer = null;
         try {
+            // creates directories
+            FileInfo directory = new FileInfo(outputFolder + "pages/");
+            directory.Directory.Create();
+
             // open writer
-            writer = new StreamWriter("doc.html");
+            writer = new StreamWriter(outputFolder + "doc.html");
             List<string> htmlList = new();
 
+            // fill htmlList with lines of HTML from big string
             string line = "";
             for (int i = 0; i < html.Length; i++) {
                 if (html[i] != '\n') {
