@@ -17,6 +17,11 @@ public class DocContainer {
     public string Summary { get; private set; } = null;
 
     /// <summary>
+    /// Whether or not this container represents a markdown file
+    /// </summary>
+    public bool IsMarkdown { get; set; } = false;
+
+    /// <summary>
     /// List of all child DocElements's inside this container
     /// </summary>
     public List<DocElement> Elements { get; private set; } = new();
@@ -93,7 +98,8 @@ public class DocContainer {
             }
         }
 
-        html += "<footer><a href=\"../index.html\">Back to main page</a></footer>";
+        string mainName = IsMarkdown ? "main.md" : "index.html";
+        html += $"<footer><a href=\"../{mainName}\">Back to main page</a></footer>";
 
         return html;
     }

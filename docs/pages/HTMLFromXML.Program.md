@@ -24,9 +24,11 @@
 <p><em>param</em> doc: Xml document to get data from</p>
 <p><em>returns:</em> Generated list of containers</p>
 
-<h3>HTMLFromXML.Program.WriteHTML(System.Xml.XmlDocument)</h3>
+<h3>HTMLFromXML.Program.WriteHTML(System.Xml.XmlDocument,System.Boolean,System.String)</h3>
 <p><em>Summary:</em> Writes converts and writes the inputted XML document to an HTML document</p>
 <p><em>param</em> doc: Xml document to draw data from</p>
+<p><em>param</em> useMarkdown: Whether or not to write markdown instead of html</p>
+<p><em>param</em> outputPath: Directory path to output HTML pages</p>
 
 <footer><a href="../index.html">Back to main page</a></footer></body>
 
