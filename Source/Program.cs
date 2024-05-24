@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Xml;
+﻿using System.Xml;
 
-namespace HTMLFromXML;
+namespace XMLDocGen;
 
 public class Program {
     static void Main(string[] args) {

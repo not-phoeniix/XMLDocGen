@@ -1,12 +1,14 @@
 using System.Xml;
 
-namespace HTMLFromXML;
+namespace XMLDocGen;
 
 public enum ElementType {
     Property,
+    Field,
     Constructor,
     Method,
-    Type
+    Type,
+    Event
 }
 
 /// <summary>
@@ -92,6 +94,9 @@ public class DocElement {
     /// <returns>ElementType that corresponds to the inputted type string</returns>
     private ElementType GetType(string type, string name) {
         switch (type) {
+            case "F":
+                return ElementType.Field;
+
             case "P":
                 return ElementType.Property;
 
@@ -104,6 +109,9 @@ public class DocElement {
 
             case "T":
                 return ElementType.Type;
+
+            case "E":
+                return ElementType.Event;
         }
 
         throw new Exception($"ERROR: ElementType {type} not recognized...");

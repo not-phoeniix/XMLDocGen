@@ -1,6 +1,6 @@
 using System.Xml;
 
-namespace HTMLFromXML;
+namespace XMLDocGen;
 
 /// <summary>
 /// Class representation of a class/struct/interface/etc. Holds a bunch of child DocElement's to display on page.
@@ -26,9 +26,11 @@ public class DocContainer {
     /// </summary>
     public List<DocElement> Elements { get; private set; } = new();
 
+    private List<DocElement> Fields { get; set; } = new();
     private List<DocElement> Properties { get; set; } = new();
     private List<DocElement> Constructors { get; set; } = new();
     private List<DocElement> Methods { get; set; } = new();
+    private List<DocElement> Events { get; set; } = new();
 
     /// <summary>
     /// Adds an element to this container's html structure
@@ -54,6 +56,14 @@ public class DocContainer {
 
             case ElementType.Method:
                 Methods.Add(element);
+                break;
+
+            case ElementType.Field:
+                Fields.Add(element);
+                break;
+
+            case ElementType.Event:
+                Events.Add(element);
                 break;
         }
 
@@ -82,10 +92,24 @@ public class DocContainer {
 
         }
 
+        if (Fields.Count != 0) {
+            html += "<h2>Fields</h2>\n";
+            foreach (DocElement element in Fields) {
+                html += element.ToString() + "\n";
+            }
+        }
+
         // adds all properties if there are any
         if (Properties.Count != 0) {
             html += "<h2>Properties</h2>\n";
             foreach (DocElement element in Properties) {
+                html += element.ToString() + "\n";
+            }
+        }
+
+        if (Events.Count != 0) {
+            html += "<h2>Events</h2>\n";
+            foreach (DocElement element in Events) {
                 html += element.ToString() + "\n";
             }
         }

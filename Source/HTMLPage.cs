@@ -1,4 +1,4 @@
-namespace HTMLFromXML;
+namespace XMLDocGen;
 
 public class HTMLPage {
     /// <summary>
