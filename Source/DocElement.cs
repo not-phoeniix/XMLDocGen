@@ -12,38 +12,35 @@ public enum ElementType {
 }
 
 /// <summary>
-/// Class representation of an individual "member" that isn't a class. Can hold things like methods, properties, constructors, etc.
+/// An individual member of an object. Can hold things like methods, properties, constructors, etc.
 /// </summary>
 public class DocElement {
+    private string name;
+    private string summary;
+    private string returns;
+    private string containerName;
+    private ElementType type;
+    private Dictionary<string, string> parameters = new();
+
     /// <summary>
     /// Name of this element
     /// </summary>
-    public string Name { get; private set; }
+    public string Name => name;
 
     /// <summary>
     /// Name of containing class/struct/etc that this member is in
     /// </summary>
-    public string ContainerName { get; private set; }
+    public string ContainerName => containerName;
 
     /// <summary>
     /// Member summary
     /// </summary>
-    public string Summary { get; private set; }
-
-    /// <summary>
-    /// Dictionary of all parameters. Key == parameter name, value == parameter summary
-    /// </summary>
-    public Dictionary<string, string> Params { get; set; } = new();
-
-    /// <summary>
-    /// Member returns summary
-    /// </summary>
-    public string Returns { get; set; }
+    public string Summary => summary;
 
     /// <summary>
     /// Type of element, can be a method, property, constructor, etc
     /// </summary>
-    public ElementType Type { get; private set; }
+    public ElementType Type => type;
 
     /// <summary>
     /// Creates a new DocElement from the data in the parent XmlNode
@@ -55,12 +52,12 @@ public class DocElement {
 
         // splits into array
         string[] splitString = elementText.Split(":");
-        Name = splitString[1];
-        Type = GetType(splitString[0], Name);
+        name = splitString[1];
+        type = GetType(splitString[0], name);
 
         // creates a "Namespace.ClassName" string
-        string[] splitName = Name.Split(".");
-        ContainerName = $"{splitName[0]}.{splitName[1]}";
+        string[] splitName = name.Split(".");
+        containerName = $"{splitName[0]}.{splitName[1]}";
 
         XmlNodeList children = node.ChildNodes;
 
@@ -68,7 +65,7 @@ public class DocElement {
         foreach (XmlNode child in children) {
             // general summary
             if (child.Name == "summary") {
-                Summary = child.InnerText.Trim();
+                summary = child.InnerText.Trim();
             }
 
             // parameters
@@ -76,12 +73,12 @@ public class DocElement {
                 string key = child.Attributes[0].InnerText.Trim();
                 string value = child.InnerText.Trim();
 
-                Params.Add(key, value);
+                parameters.Add(key, value);
             }
 
             // return statement
             if (child.Name == "returns") {
-                Returns = child.InnerText.Trim();
+                returns = child.InnerText.Trim();
             }
         }
     }
@@ -118,23 +115,43 @@ public class DocElement {
     }
 
     /// <summary>
+    /// Markdown representation of this current element
+    /// </summary>
+    /// <returns>String of Markdown for this current element</returns>
+    public string AsMarkdown() {
+        string content =
+            $"### {Name}\n" +
+            $"*Summary:* {Summary}\n";
+
+        foreach (KeyValuePair<string, string> pair in parameters) {
+            content += $"*param* {pair.Key}: {pair.Value}\n";
+        }
+
+        if (returns != null) {
+            content += $"*returns:* {returns}\n";
+        }
+
+        return content;
+
+    }
+
+    /// <summary>
     /// HTML representation of this current element
     /// </summary>
     /// <returns>String of HTML for this current element</returns>
-    public override string ToString() {
-        string html = (
+    public string AsHTML() {
+        string content =
             $"<h3>{Name}</h3>\n" +
-            $"<p><em>Summary:</em> {Summary}</p>\n"
-        );
+            $"<p><em>Summary:</em> {Summary}</p>\n";
 
-        foreach (KeyValuePair<string, string> pair in Params) {
-            html += $"<p><em>param</em> {pair.Key}: {pair.Value}</p>\n";
+        foreach (KeyValuePair<string, string> pair in parameters) {
+            content += $"<p><em>param</em> {pair.Key}: {pair.Value}</p>\n";
         }
 
-        if (Returns != null) {
-            html += $"<p><em>returns:</em> {Returns}</p>\n";
+        if (returns != null) {
+            content += $"<p><em>returns:</em> {returns}</p>\n";
         }
 
-        return html;
+        return content;
     }
 }

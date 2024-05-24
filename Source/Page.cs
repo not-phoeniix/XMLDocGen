@@ -1,52 +1,50 @@
 namespace XMLDocGen;
 
-public class HTMLPage {
+public class Page {
     /// <summary>
-    /// Title of the HTML page
+    /// String that contains all content for entire page
     /// </summary>
-    public string Title { get; private set; }
+    private string content = "";
 
     /// <summary>
-    /// Entire inner HTML string
+    /// Creates a new Page object
     /// </summary>
-    public string HTML { get; private set; } = "";
-
-    /// <summary>
-    /// Creates a new HTMLPage object
-    /// </summary>
-    /// <param name="title">Title of page</param>
+    /// <param name="filename">File name of this page, extension not included</param>
     /// <param name="container">Container that contains XML document data (optional)</param>
-    /// <param name="additionalHTML">Any additional HTML string to add after container stuff (optional)</param>
-    public HTMLPage(string title, DocContainer? container, string? additionalHTML) {
-        Title = title;
-
+    /// <param name="additionalContent">Any additional HTML string to add after container stuff (optional)</param>
+    public Page(string filename, bool asMarkdown, DocContainer container = null, string additionalContent = "") {
         // starting HTML
-        HTML += (
-            "<!DOCTYPE html>\n" +
-            "<html lang=\"en\">\n" +
-            "\n" +
-            "<head>\n" +
-                "\t<meta charset=\"UTF-8\">\n" +
-                "\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-                $"\t<title>{title}</title>\n" +
-            "</head>\n" +
-            "\n" +
-            "<body>\n"
-        );
+        if (!asMarkdown) {
+            content +=
+                "<!DOCTYPE html>\n" +
+                "<html lang=\"en\">\n" +
+                "\n" +
+                "<head>\n" +
+                    "\t<meta charset=\"UTF-8\">\n" +
+                    "\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                    $"\t<title>{filename}</title>\n" +
+                "</head>\n" +
+                "\n" +
+                "<body>\n";
+        }
 
         // body HTML
-        if (container != null)
-            HTML += container.ToString();
+        if (container != null) {
+            content += asMarkdown ?
+                container.AsMarkdown() :
+                container.AsHTML();
+        }
 
-        if (additionalHTML != null)
-            HTML += additionalHTML;
+        // additional content
+        content += additionalContent;
 
         // ending HTML
-        HTML += (
-            "</body>\n" +
-            "\n" +
-            "</html>\n"
-        );
+        if (!asMarkdown) {
+            content +=
+                "</body>\n" +
+                "\n" +
+                "</html>\n";
+        }
     }
 
     /// <summary>
@@ -63,10 +61,10 @@ public class HTMLPage {
 
             // fill htmlList with lines of HTML from big string
             string line = "";
-            for (int i = 0; i < HTML.Length; i++) {
-                if (HTML[i] != '\n') {
+            for (int i = 0; i < content.Length; i++) {
+                if (content[i] != '\n') {
                     // add character to line string
-                    line += HTML[i];
+                    line += content[i];
 
                 } else {
                     // add line and reset string

@@ -1,36 +1,26 @@
-using System.Xml;
-
 namespace XMLDocGen;
 
 /// <summary>
-/// Class representation of a class/struct/interface/etc. Holds a bunch of child DocElement's to display on page.
+/// An object, like a class/struct/interface/etc. Holds a bunch of child DocElement's to display on page.
 /// </summary>
 public class DocContainer {
     /// <summary>
     /// Container name
     /// </summary>
-    public string Name { get; private set; } = null;
+    public string Name { get; private set; }
 
     /// <summary>
     /// Summary text of container
     /// </summary>
-    public string Summary { get; private set; } = null;
+    public string Summary { get; private set; }
 
-    /// <summary>
-    /// Whether or not this container represents a markdown file
-    /// </summary>
-    public bool IsMarkdown { get; set; } = false;
+    private List<DocElement> elements = new();
 
-    /// <summary>
-    /// List of all child DocElements's inside this container
-    /// </summary>
-    public List<DocElement> Elements { get; private set; } = new();
-
-    private List<DocElement> Fields { get; set; } = new();
-    private List<DocElement> Properties { get; set; } = new();
-    private List<DocElement> Constructors { get; set; } = new();
-    private List<DocElement> Methods { get; set; } = new();
-    private List<DocElement> Events { get; set; } = new();
+    private List<DocElement> fields = new();
+    private List<DocElement> properties = new();
+    private List<DocElement> constructors = new();
+    private List<DocElement> methods = new();
+    private List<DocElement> events = new();
 
     /// <summary>
     /// Adds an element to this container's html structure
@@ -47,84 +37,144 @@ public class DocContainer {
                 break;
 
             case ElementType.Property:
-                Properties.Add(element);
+                properties.Add(element);
                 break;
 
             case ElementType.Constructor:
-                Constructors.Add(element);
+                constructors.Add(element);
                 break;
 
             case ElementType.Method:
-                Methods.Add(element);
+                methods.Add(element);
                 break;
 
             case ElementType.Field:
-                Fields.Add(element);
+                fields.Add(element);
                 break;
 
             case ElementType.Event:
-                Events.Add(element);
+                events.Add(element);
                 break;
         }
 
-        Elements.Add(element);
+        elements.Add(element);
     }
 
     /// <summary>
-    /// HTML representation of this container and all its elements
+    /// Markdown representation of this current container
     /// </summary>
-    /// <returns>HTML string</returns>
-    public override string ToString() {
+    /// <returns>String of Markdown for this current container</returns>
+    public string AsMarkdown() {
         // title string
-        string html = $"<h1>{Name}</h1>\n";
+        string content = $"# {Name}\n";
 
         // sets summary, notifies if no summary exists
-        html += Summary == null ?
-            "<p>No container summary found :(</p>\n" :
-            $"<p>{Summary}</p>\n";
+        content += Summary == null ?
+            "No container summary found :(\n" :
+            $"{Summary}\n";
 
         // adds all constructors if there are any
-        if (Constructors.Count != 0) {
-            html += "<h2>Constructors</h2>\n";
-            foreach (DocElement element in Constructors) {
-                html += element.ToString() + "\n";
+        if (constructors.Count != 0) {
+            content += "## Constructorns\n";
+            foreach (DocElement element in constructors) {
+                content += element.AsMarkdown() + "\n";
             }
-
         }
 
-        if (Fields.Count != 0) {
-            html += "<h2>Fields</h2>\n";
-            foreach (DocElement element in Fields) {
-                html += element.ToString() + "\n";
+        // adds all fields if there are any
+        if (fields.Count != 0) {
+            content += "## Fields\n";
+            foreach (DocElement element in fields) {
+                content += element.AsMarkdown() + "\n";
             }
         }
 
         // adds all properties if there are any
-        if (Properties.Count != 0) {
-            html += "<h2>Properties</h2>\n";
-            foreach (DocElement element in Properties) {
-                html += element.ToString() + "\n";
+        if (properties.Count != 0) {
+            content += "## Properties\n";
+            foreach (DocElement element in properties) {
+                content += element.AsMarkdown() + "\n";
             }
         }
 
-        if (Events.Count != 0) {
-            html += "<h2>Events</h2>\n";
-            foreach (DocElement element in Events) {
-                html += element.ToString() + "\n";
+        // adds all events if there are any
+        if (events.Count != 0) {
+            content += "## Events\n";
+            foreach (DocElement element in events) {
+                content += element.AsMarkdown() + "\n";
             }
         }
 
         // adds all methods if there are any
-        if (Methods.Count != 0) {
-            html += "<h2>Methods</h2>\n";
-            foreach (DocElement element in Methods) {
-                html += element.ToString() + "\n";
+        if (methods.Count != 0) {
+            content += "## Methods\n";
+            foreach (DocElement element in methods) {
+                content += element.AsMarkdown() + "\n";
             }
         }
 
-        string mainName = IsMarkdown ? "main.md" : "index.html";
-        html += $"<footer><a href=\"../{mainName}\">Back to main page</a></footer>";
+        string mainName = "main.md";
+        content += $"[Back to main page](../{mainName})";
 
-        return html;
+        return content;
+    }
+
+    /// <summary>
+    /// HTML representation of this current container
+    /// </summary>
+    /// <returns>String of HTML for this current container</returns>
+    public string AsHTML() {
+        // title string
+        string content = $"<h1>{Name}</h1>\n";
+
+        // sets summary, notifies if no summary exists
+        content += Summary == null ?
+            "<p>No container summary found :(</p>\n" :
+            $"<p>{Summary}</p>\n";
+
+        // adds all constructors if there are any
+        if (constructors.Count != 0) {
+            content += "<h2>Constructors</h2>\n";
+            foreach (DocElement element in constructors) {
+                content += element.AsHTML() + "\n";
+            }
+        }
+
+        // adds all fields if there are any
+        if (fields.Count != 0) {
+            content += "<h2>Fields</h2>\n";
+            foreach (DocElement element in fields) {
+                content += element.AsHTML() + "\n";
+            }
+        }
+
+        // adds all properties if there are any
+        if (properties.Count != 0) {
+            content += "<h2>Properties</h2>\n";
+            foreach (DocElement element in properties) {
+                content += element.AsHTML() + "\n";
+            }
+        }
+
+        // adds all events if there are any
+        if (events.Count != 0) {
+            content += "<h2>Events</h2>\n";
+            foreach (DocElement element in events) {
+                content += element.AsHTML() + "\n";
+            }
+        }
+
+        // adds all methods if there are any
+        if (methods.Count != 0) {
+            content += "<h2>Methods</h2>\n";
+            foreach (DocElement element in methods) {
+                content += element.AsHTML() + "\n";
+            }
+        }
+
+        string mainName = "main.md";
+        content += $"<footer><a href=\"../{mainName}\">Back to main page</a></footer>";
+
+        return content;
     }
 }

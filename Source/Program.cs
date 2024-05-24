@@ -23,7 +23,7 @@ public class Program {
             case "--html":
                 useMarkdown = false;
                 break;
-            case "--markdown":
+            case "--md":
                 useMarkdown = true;
                 break;
             default:
@@ -45,7 +45,11 @@ public class Program {
         Console.WriteLine($"Successfully loaded XML file at path \"{filepath}\"!");
         Console.WriteLine($"Project name: {GetProjectName(doc)}");
 
-        WriteHTML(doc, useMarkdown, outputPath);
+        if (useMarkdown) {
+            WriteMarkdown(doc, outputPath);
+        } else {
+            WriteHTML(doc, outputPath);
+        }
     }
 
     /// <summary>
@@ -53,10 +57,10 @@ public class Program {
     /// </summary>
     static void PrintHelp() {
         Console.WriteLine(
-            "HTMLFromXML - Generate an HTML page file from C# XML\n" +
+            "XMLDocGen - Generate an HTML page file from C# XML\n" +
             "\n" +
-            "Usage: HTMLFromXML [mode] [inputFile] [outputPath]\n" +
-                "\t [mode] - output format, either \"--html\" or \"--markdown\"\n" +
+            "Usage: XMLDocGen [mode] [inputFile] [outputPath]\n" +
+                "\t[mode] - output format, either \"--html\" or \"--md\"\n" +
                 "\t[inputFile] - filepath of input C# XML project file\n" +
                 "\t[outputPath] - directory to output all HTML files into\n"
         );
@@ -75,9 +79,8 @@ public class Program {
     /// Generates a list of containers with all HTML-formatted information from inputted Xml doc
     /// </summary>
     /// <param name="doc">Xml document to get data from</param>
-    /// <param name="useMarkdown">Whether or not to write markdown files or not</param>
     /// <returns>Generated list of containers</returns>
-    static List<DocContainer> GenerateContainers(XmlDocument doc, bool useMarkdown) {
+    static List<DocContainer> GenerateContainers(XmlDocument doc) {
         List<DocContainer> containers = new();
 
         // gets all elements marked as a "member" and adds them iteratively
@@ -97,7 +100,7 @@ public class Program {
 
             // creates a new container if it doesn't exist yet
             if (!containerExists) {
-                DocContainer container = new() { IsMarkdown = useMarkdown };
+                DocContainer container = new();
                 container.AddElement(element);
                 containers.Add(container);
             }
@@ -110,9 +113,8 @@ public class Program {
     /// Writes converts and writes the inputted XML document to an HTML document
     /// </summary>
     /// <param name="doc">Xml document to draw data from</param>
-    /// <param name="useMarkdown">Whether or not to write markdown instead of html</param>
     /// <param name="outputPath">Directory path to output HTML pages</param>
-    static void WriteHTML(XmlDocument doc, bool useMarkdown, string outputPath) {
+    static void WriteHTML(XmlDocument doc, string outputPath) {
         string pagesPath = outputPath + "pages/";
 
         // create directiories
@@ -125,37 +127,77 @@ public class Program {
             Console.WriteLine("Error in creating directories! Error: " + ex.Message);
         }
 
-        List<DocContainer> containers = GenerateContainers(doc, useMarkdown);
+        List<DocContainer> containers = GenerateContainers(doc);
 
         // create and write all sub pages
         foreach (DocContainer container in containers) {
             string title = container.Name;
-            HTMLPage page = new(title, container, null);
-            page.WriteToFile(pagesPath + title + (useMarkdown ? ".md" : ".html"));
+            Page page = new(title, false, container, "");
+            page.WriteToFile(pagesPath + title + ".html");
         }
 
         // create main page
 
-        string innerHTML = (
+        string content = (
             "<h1>Main documentation page</h1>\n" +
             "<p>Pages:</p>\n" +
             "<ul>\n"
         );
 
         foreach (DocContainer container in containers) {
-            string relPath = "pages/" + container.Name + (useMarkdown ? ".md" : ".html");
+            string relPath = "pages/" + container.Name + ".html";
 
             // adds a list item linking to each container page thingy
-            innerHTML +=
+            content +=
                 "\t<li>" +
                     $"<a href=\"{relPath}\">{container.Name}</a>" +
                 "</li>\n";
         }
 
-        innerHTML += "</ul>\n";
+        content += "</ul>\n";
 
-        HTMLPage mainPage = new("Main documentation page", null, innerHTML);
-        string mainName = useMarkdown ? "main.md" : "index.html";
+        Page mainPage = new("Main documentation page", false, null, content);
+        string mainName = "index.html";
+        mainPage.WriteToFile(outputPath + mainName);
+    }
+
+    static void WriteMarkdown(XmlDocument doc, string outputPath) {
+        string pagesPath = outputPath + "pages/";
+
+        // create directiories
+        try {
+            FileInfo filePath = new(pagesPath);
+            filePath.Directory.Create();
+
+        } catch (Exception ex) {
+            // error printing
+            Console.WriteLine("Error in creating directories! Error: " + ex.Message);
+        }
+
+        List<DocContainer> containers = GenerateContainers(doc);
+
+        // create and write all sub pages
+        foreach (DocContainer container in containers) {
+            string title = container.Name;
+            Page page = new(title, true, container, "");
+            page.WriteToFile(pagesPath + title + ".md");
+        }
+
+        // create main page
+
+        string content =
+            "# Main documentation page\n" +
+            "Pages:\n";
+
+        foreach (DocContainer container in containers) {
+            string relPath = "pages/" + container.Name + ".md";
+
+            // adds a list item linking to each container page thingy
+            content += $"- [{container.Name}]({relPath})\n";
+        }
+
+        Page mainPage = new("Main documentation page", true, null, content);
+        string mainName = "main.md";
         mainPage.WriteToFile(outputPath + mainName);
     }
 }
