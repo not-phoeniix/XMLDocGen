@@ -75,7 +75,7 @@ public class DocContainer {
 
         // adds all constructors if there are any
         if (constructors.Count != 0) {
-            content += "## Constructorns\n";
+            content += "## Constructors\n";
             foreach (DocElement element in constructors) {
                 content += element.AsMarkdown() + "\n";
             }
