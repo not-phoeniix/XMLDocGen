@@ -5,7 +5,7 @@ namespace XMLDocGen;
 /// </summary>
 public class DocContainer {
     /// <summary>
-    /// Container name
+    /// Container name inside the namespace
     /// </summary>
     public string Name { get; private set; }
 
@@ -13,6 +13,11 @@ public class DocContainer {
     /// Summary text of container
     /// </summary>
     public string Summary { get; private set; }
+
+    /// <summary>
+    /// String of the namespace this container exists in
+    /// </summary>
+    public string Namespace { get; private set; }
 
     private List<DocElement> elements = new();
 
@@ -29,6 +34,11 @@ public class DocContainer {
     public void AddElement(DocElement element) {
         // sets container name to element's container name if null
         Name ??= element.ContainerName;
+        string elementNamespace = GetNamespace(element.ContainerName);
+
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine("ELEMENT BEING ADDED!! NAME: \"" + element.Name + "\"... ELEMENT NAMESPACE: \"" + elementNamespace + "\"");
+        Console.ResetColor();
 
         switch (element.Type) {
             case ElementType.Type:
@@ -176,5 +186,16 @@ public class DocContainer {
         content += $"<footer><a href=\"../{mainName}\">Back to main page</a></footer>";
 
         return content;
+    }
+
+    private string GetNamespace(string input) {
+        // lets say input is:
+        // "SummerGame.UI.Gaming.Menu"
+
+        string[] split = input.Split('.');
+        string objectName = split[split.Length - 1];
+        int substringLength = input.Length - objectName.Length - 1;
+        string inputNamespace = input.Substring(0, substringLength);
+        return inputNamespace;
     }
 }
