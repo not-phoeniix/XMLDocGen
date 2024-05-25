@@ -34,11 +34,12 @@ public class DocContainer {
     public void AddElement(DocElement element) {
         // sets container name to element's container name if null
         Name ??= element.ContainerName;
-        string elementNamespace = GetNamespace(element.ContainerName);
 
+        string elementNamespace = GetNamespace(element.ContainerName);
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("ELEMENT BEING ADDED!! NAME: \"" + element.Name + "\"... ELEMENT NAMESPACE: \"" + elementNamespace + "\"");
         Console.ResetColor();
+        Namespace = elementNamespace;
 
         switch (element.Type) {
             case ElementType.Type:
@@ -136,6 +137,7 @@ public class DocContainer {
     public string AsHTML() {
         // title string
         string content = $"<h1>{Name}</h1>\n";
+        content += "*namespace:* " + Namespace + "\n";
 
         // sets summary, notifies if no summary exists
         content += Summary == null ?
